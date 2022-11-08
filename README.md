@@ -146,20 +146,20 @@ As you can see story has following keys
 
 ## Linking intents with stories
 ```
-gobot := core.NewGoBot(intents, stories)
+goBot := GoBot.NewGoBot(intents, stories)
 
 ```
 
 ## PlayGround
 This is a commandline playground of your created GoBot
 ```
-playground(*gobot)
+goBot.Playground()
 
 ```
 
 ## Chatting with GoBot
 ```
-key, response := Chat(*gobot, "hello")
+key, response := goBot.Chat("hello") --> Chat(your message)
 fmt.Println(key, response)
 
 ```
