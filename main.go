@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"gobot/core"
 )
 
@@ -63,7 +64,39 @@ func main() {
 		"action":  nil,
 	}
 
+	stories["order_pizza"] = map[string]interface{}{
+		"message": "Unataka pizza gani?",
+		"next":    nil,
+		"action":  nil,
+	}
+
+	stories["fallback"] = map[string]interface{}{
+		"message": "Sijaelewa unataka nini?",
+		"next":    nil,
+		"action":  nil,
+	}
+
 	gobot := core.NewGoBot(intents, stories)
 
-	gobot.Chat("piza")
+	key := gobot.FindMessageKey("sitaki")
+
+	if key != "" {
+		storyObj := stories[key]
+		if key != "cancel" {
+			if storyObj != nil {
+				story := storyObj.(map[string]interface{})
+				fmt.Println(story["message"])
+			} else {
+				fmt.Println("interface is nil")
+			}
+		} else {
+			fmt.Println("Karibu tena")
+		}
+
+	} else {
+		fallbackObject := stories["fallback"].(map[string]interface{})
+		message := fallbackObject["message"]
+		fmt.Println(message)
+	}
+
 }

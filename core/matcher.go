@@ -1,6 +1,8 @@
 package core
 
-import "strings"
+import (
+	"strings"
+)
 
 // - `?` matches exactly one occurrence of any character.
 // - `*` matches arbitrary many (including zero) occurrences of any character.
@@ -63,6 +65,7 @@ func (w *GoBotMatch) Matches(input string) bool {
 
 	patternIdx := 0
 	for _, inputChar := range input {
+
 		if patternIdx > len(w.pattern) {
 			return false
 		}

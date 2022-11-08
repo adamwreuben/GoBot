@@ -2,14 +2,16 @@ package core
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
+	"strings"
 )
 
 type GoBot struct {
 	Intent interface{} //This defines user intention
 	Story  interface{} //This drives conversational flow
 }
+
+var matchedKey string
 
 func NewGoBot(intents interface{}, stories interface{}) *GoBot {
 	return &GoBot{
@@ -18,25 +20,32 @@ func NewGoBot(intents interface{}, stories interface{}) *GoBot {
 	}
 }
 
-func (gobot *GoBot) Chat(message string) string {
+func (gobot *GoBot) FindMessageKey(message string) string {
 
-	matchMessage := NewMatch("*" + message + "*")
+	matchMessage := NewMatch("*" + strings.ToLower(message) + "*")
 	//Find a story where the message belongs
 
 	//Loop through all keys of intents
+	outerMatched := false
 	for key, intent := range gobot.Intent.(map[string]interface{}) {
 		//From Key loop in key slice to find message match
-		fmt.Println(key + "\n ======== \n")
 		for _, intentMessage := range intent.([]string) {
-			fmt.Println(intentMessage)
-			matched := matchMessage.Matches(intentMessage)
-			fmt.Println(matched)
+			// fmt.Println(intentMessage)
+			outerMatched = matchMessage.Matches(strings.ToLower(intentMessage))
+			if outerMatched {
+				matchedKey = key
+				break
+			}
 
+		}
+
+		if outerMatched {
+			break
 		}
 
 	}
 
-	return ""
+	return matchedKey
 }
 
 func (gobot *GoBot) FromJSON(r io.Reader) error {
