@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"strings"
 )
@@ -30,7 +31,6 @@ func (gobot *GoBot) FindMessageKey(message string) string {
 	for key, intent := range gobot.Intent.(map[string]interface{}) {
 		//From Key loop in key slice to find message match
 		for _, intentMessage := range intent.([]string) {
-			// fmt.Println(intentMessage)
 			outerMatched = matchMessage.Matches(strings.ToLower(intentMessage))
 			if outerMatched {
 				matchedKey = key
@@ -43,6 +43,28 @@ func (gobot *GoBot) FindMessageKey(message string) string {
 			break
 		}
 
+	}
+
+	//Loop choices slice  *This is not good practice...Will be fixed as days goes on
+	if matchedKey == "" {
+		for key, choices := range gobot.Story.(map[string]interface{}) {
+			//Check if story has choices
+			choiceObject := choices.(map[string]interface{})["choices"]
+			if choiceObject != nil {
+				fmt.Println(choiceObject)
+				for _, choice := range choiceObject.([]string) {
+					outerMatched = matchMessage.Matches(strings.ToLower(choice))
+					if outerMatched {
+						matchedKey = key
+						break
+					}
+				}
+			}
+
+			if outerMatched {
+				break
+			}
+		}
 	}
 
 	return matchedKey
