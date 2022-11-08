@@ -172,7 +172,7 @@ In progress
 
 ## Authors
 
-This package is authored and maintained by [Adam Reuben](https://github.com/adamwreuben/GoBot)
+This package is authored and maintained by [Adam Reuben](https://github.com/adamwreuben)
 
 ## License
 
