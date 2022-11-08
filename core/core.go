@@ -16,12 +16,13 @@ func NewGoBot(intents interface{}, stories interface{}) *GoBot {
 		Story:  stories,
 	}
 }
-func (p *GoBot) FromJSON(r io.Reader) error {
+
+func (gobot *GoBot) FromJSON(r io.Reader) error {
 	e := json.NewDecoder(r)
-	return e.Decode(p)
+	return e.Decode(gobot)
 }
 
-func (p *GoBot) ToJSON(w io.Writer) error {
+func (gobot *GoBot) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
-	return e.Encode(p)
+	return e.Encode(gobot)
 }
