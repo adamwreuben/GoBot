@@ -67,7 +67,6 @@ func main() {
 		"next":    nil,
 	}
 
-	//list
 	stories["order_pizza"] = map[string]interface{}{
 		"message": "Unataka pizza gani?",
 		"order_pizza_choices": []string{
