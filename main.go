@@ -3,9 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"gobot/core"
 	"os"
 	"strings"
+
+	"github.com/adamwreuben/GoBot/core"
 )
 
 var userInputs string
