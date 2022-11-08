@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"gobot/core"
+	"strings"
 )
 
 var answers map[string]interface{}
@@ -69,19 +70,19 @@ func main() {
 	//list
 	stories["order_pizza"] = map[string]interface{}{
 		"message": "Unataka pizza gani?",
-		"choices": []string{
+		"order_pizza_choices": []string{
 			"1. Chicken Pizza",
 			"2. Cheese Pizza",
 			"3. Mixture Pizza",
 			"4. Skyline Pizza",
 		},
-		"next":            "soda_choices",
+		"next":            "soda",
 		"choice_fallback": "Sorry, hatuna aina hio ya pizza!",
 	}
 
-	stories["soda_choices"] = map[string]interface{}{
+	stories["soda"] = map[string]interface{}{
 		"message": "Unakata kinywaji gani?",
-		"choices": []string{
+		"soda_choices": []string{
 			"1. Pepsi",
 			"2. Cocacola",
 			"3. Sprite",
@@ -98,7 +99,7 @@ func main() {
 
 	gobot := core.NewGoBot(intents, stories)
 
-	key := gobot.FindMessageKey("pepsi")
+	key := gobot.FindMessageKey("skyline pizza")
 
 	if key != "" {
 		storyObj := stories[key]
@@ -111,8 +112,20 @@ func main() {
 				fmt.Println(story["message"])
 
 			} else {
-				fmt.Println("Key: ", key)
-				fmt.Println("interface is nil")
+				fmt.Println("Key when no interface: ", key)
+				if strings.Contains(key, "choices") {
+					key := key[:len(key)-8]
+					story := stories[key].(map[string]interface{})
+					next := story["next"]
+
+					if next != nil {
+						story := stories[next.(string)].(map[string]interface{})
+						fmt.Println(story["message"])
+					}
+
+				} else {
+					fmt.Println("interface is nil")
+				}
 			}
 		} else {
 			fmt.Println("Key: ", key)

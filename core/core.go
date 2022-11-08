@@ -2,7 +2,6 @@ package core
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"strings"
 )
@@ -49,21 +48,29 @@ func (gobot *GoBot) FindMessageKey(message string) string {
 	if matchedKey == "" {
 		for key, choices := range gobot.Story.(map[string]interface{}) {
 			//Check if story has choices
-			choiceObject := choices.(map[string]interface{})["choices"]
-			if choiceObject != nil {
-				fmt.Println(choiceObject)
-				for _, choice := range choiceObject.([]string) {
-					outerMatched = matchMessage.Matches(strings.ToLower(choice))
-					if outerMatched {
-						matchedKey = key
-						break
+			if strings.Contains(key, "choices") {
+				matchedKey = ""
+			} else {
+				choiceObject := choices.(map[string]interface{})[key+"_choices"]
+				if choiceObject != nil {
+					for _, choice := range choiceObject.([]string) {
+						outerMatched = matchMessage.Matches(strings.ToLower(choice))
+						if outerMatched {
+							if strings.Contains(key, "choices") {
+								matchedKey = key
+							} else {
+								matchedKey = key + "_choices"
+							}
+							break
+						}
 					}
+				}
+
+				if outerMatched {
+					break
 				}
 			}
 
-			if outerMatched {
-				break
-			}
 		}
 	}
 
