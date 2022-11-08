@@ -129,7 +129,7 @@ stories["fallback"] = map[string]interface{}{
 ``NB`` The following must be provided as ``AddOns`` to GoBot to ensure it can cancel execution when the user type ``Intents from cancel intent``
 From above stories, the following are Special stories key which are recognized by ``GoBot`` which are ``cancel`` - which is responsible to cancel any excution of the bot. and ``fallback`` - This is a default answer ``GoBot`` Gives when it doesn't understand the user intent.
 
-# Understanding story keys
+## Understanding story keys
 ```
 If key are not provided, GoBot will assume all keys are nil
 ```
