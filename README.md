@@ -8,7 +8,14 @@ GoBot
 
 
 # Why I made GoBot
-One day I came across this library called [Sarufi](https://docs.sarufi.io/) which is used to create ChatBot with Ai, From there I wanted something like that but more lightweight which i can have full control on it ``Completely free`` without the need to `Create account`, and be able to host it if i want. From there ``GoBot`` was born. This project is still in early developement stages any changes may happen in future. ``Lets make our open community safe``
+
+It’s no longer about a race car, it’s a boat. And steering a boat requires too much damn planning and patience, So if ``GoBot`` succeeds, it really never was me, it’s the people there who can drive boats (open community). As I am with the world, I am a cheerleader.
+
+Doing all this is just a hobby, is just a way to write some open source infrastructure so I’m not doing nothing. It’s not the future.
+
+``Lets make our open community safe``
+
+
 
 GoBot Terminology
 ====================
