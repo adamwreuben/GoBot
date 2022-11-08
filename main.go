@@ -65,5 +65,5 @@ func main() {
 
 	gobot := core.NewGoBot(intents, stories)
 
-	gobot.Chat("ello")
+	gobot.Chat("piza")
 }
