@@ -2,6 +2,8 @@ GoBot
 =======
 
 ``GoBot`` is a Go library for building chat bots super fast and easily with only interfaces(AKA JSON) inspired by Sarufi. 
+[![made-with-Go](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](https://go.dev/)
+[![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/gomods/athens.svg)](https://github.com/adamwreuben/GoBot)
 
 GoBot Terminology
 ====================
