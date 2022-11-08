@@ -15,3 +15,17 @@ GoBot Terminology
 
 
 
+## Installation
+
+Simply install with the `go get` command:
+```
+go get github.com/adamwreuben/GoBot
+```
+Then import it to your main package as:
+```
+package main
+
+import (
+	gobot "github.com/adamwreuben/GoBot"
+)
+```
