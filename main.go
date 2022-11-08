@@ -49,8 +49,6 @@ func main() {
 		"I want Pizza",
 	}
 
-	//Create Stories(Dialogs) --> stories key must match intents key
-
 	stories["greets"] = map[string]interface{}{
 		"message": "Helo, Karibu nikusaidiaje?",
 		"choices": nil,

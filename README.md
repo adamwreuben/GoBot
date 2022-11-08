@@ -39,6 +39,7 @@ stories := make(map[string]interface{})
 
 ```
 
+# Creating Intents
 Then start creating intent, by providing key to intents as intent name as follows, In this demo we will create an ordering pizza chatbot, The followings are its intents, The following example was taken from [Sarfufi doc](https://docs.sarufi.io/docs/Getting%20started%20/create-a-simple-chatbot)
 
 ```
@@ -67,5 +68,63 @@ intents["order_pizza"] = []string{
 
 ```
 
-From above we have create 3 intents namely ``greets``, ``cancel``,``order_pizza``
-=================================================================================
+From above we have create 3 intents namely ``greets``,   ``cancel``,  ``order_pizza``
+
+# Creating stories (Dialog flow)
+Creating stories is simple, make sure that the ``Key name of the intent`` matches the ``key name of the story``, by doing so GoBot we know exactly which intent corresponds to what story.
+
+Example of stories according to our ordering pizza chatbot
+
+```
+stories["greets"] = map[string]interface{}{
+		"message": "Helo, Karibu nikusaidiaje?",
+		"choices": nil,
+		"next":    nil, //nil means end
+	}
+
+stories["goodbye"] = map[string]interface{}{
+		"message": "Karibu tena",
+		"choices": nil,
+		"next":    nil,
+	}
+
+stories["cancel"] = map[string]interface{}{
+		"message": "Karibu tena",
+		"choices": nil,
+		"next":    nil,
+	}
+
+	
+stories["order_pizza"] = map[string]interface{}{
+		"message": "Unataka pizza gani?",
+		"order_pizza_choices": []string{
+			"1. Chicken Pizza",
+			"2. Cheese Pizza",
+			"3. Mixture Pizza",
+			"4. Skyline Pizza",
+		},
+		"next":            "soda",
+		"choice_fallback": "Sorry, hatuna aina hio ya pizza!",
+	}
+
+stories["soda"] = map[string]interface{}{
+		"message": "Unakata kinywaji gani?",
+		"soda_choices": []string{
+			"1. Pepsi",
+			"2. Cocacola",
+			"3. Sprite",
+			"4. Mirinda",
+		},
+		"choice_fallback": "Sorry, hatuna aina hio ya soda!",
+	}
+
+stories["fallback"] = map[string]interface{}{
+		"message": "Sijaelewa unataka nini?",
+		"choices": nil,
+		"next":    nil,
+	}
+
+```
+
+``NB`` The following must be provided as ``AddOns`` to GoBot to ensure it can cancel execution when the user type ``Intents from cancel intent``
+From above stories, the following are Special stories key which are recognized by ``GoBot`` which are ``cancel`` - which is responsible to cancel any excution of the bot. and ``fallback`` - This is a default answer ``GoBot`` Gives when it doesn't understand the user intent.
