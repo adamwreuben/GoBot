@@ -68,3 +68,4 @@ intents["order_pizza"] = []string{
 ```
 
 From above we have create 3 intents namely ``greets``, ``cancel``,``order_pizza``
+=================================================================================
