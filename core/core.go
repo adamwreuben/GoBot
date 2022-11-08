@@ -11,8 +11,6 @@ type GoBot struct {
 	Story  interface{} //This drives conversational flow
 }
 
-var matchedKey string
-
 func NewGoBot(intents interface{}, stories interface{}) *GoBot {
 	return &GoBot{
 		Intent: intents,
@@ -21,7 +19,7 @@ func NewGoBot(intents interface{}, stories interface{}) *GoBot {
 }
 
 func (gobot *GoBot) FindMessageKey(message string) string {
-
+	matchedKey := ""
 	matchMessage := NewMatch("*" + strings.ToLower(message) + "*")
 	//Find a story where the message belongs
 
