@@ -52,14 +52,14 @@ intents["greets"] = []string{
 		"Hola",
 	}
 
-	intents["cancel"] = []string{
+intents["cancel"] = []string{
 		"sitisha",
 		"acha",
 		"cancel",
 		"sitaki",
 	}
 
-	intents["order_pizza"] = []string{
+intents["order_pizza"] = []string{
 		"Nataka pizza",
 		"I need pizza",
 		"I want Pizza",
