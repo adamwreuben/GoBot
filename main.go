@@ -99,7 +99,7 @@ func main() {
 
 	gobot := core.NewGoBot(intents, stories)
 
-	key := gobot.FindMessageKey("skyline pizza")
+	key := gobot.FindMessageKey("")
 
 	if key != "" {
 		storyObj := stories[key]
@@ -121,6 +121,8 @@ func main() {
 					if next != nil {
 						story := stories[next.(string)].(map[string]interface{})
 						fmt.Println(story["message"])
+					} else {
+						fmt.Println("Asante sana")
 					}
 
 				} else {
