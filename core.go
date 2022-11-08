@@ -13,7 +13,7 @@ var userInputs string
 
 type GoBot struct {
 	Intent interface{} //This defines user intention
-	Story  interface{} //This drives conversational flow
+	Story  interface{} //This drives conversational flow (dialog)
 }
 
 func NewGoBot(intents interface{}, stories interface{}) *GoBot {
