@@ -103,8 +103,8 @@ func (gobot *GoBot) Playground() {
 		if len(text) != 0 {
 			// fmt.Println(text)
 			userInputs = text
-			key, response := gobot.Chat(text)
-			fmt.Println(key, response)
+			_, response := gobot.Chat(text)
+			fmt.Println(response)
 		} else {
 			// exit if user entered an empty string
 			break
@@ -148,7 +148,16 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 						return key, story["message"].(string)
 
 					} else { // when next is Nil
-						// fmt.Println("Asante sana")
+						story := goBotStories[key].(map[string]interface{})
+						choices := story[key+"_"+"choices"].([]string)
+
+						for _, choice := range choices {
+							if strings.Contains(strings.ToLower(choice), message) {
+								// fmt.Println(choice)
+								return key, choice
+							}
+						}
+
 						return key, "Asante sana"
 
 					}
