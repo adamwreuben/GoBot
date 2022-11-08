@@ -6,6 +6,10 @@ GoBot
 [![made-with-Go](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](https://go.dev/)
 [![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/gomods/athens.svg)](https://github.com/adamwreuben/GoBot)
 
+
+# Why I made GoBot
+One day I came across this library called [Sarufi](https://docs.sarufi.io/) which is used to create ChatBot with Ai, From there I wanted something like that but more lightweight which i can have full control on it ``Completely free``` without the need to Create account, and be able to host it if i want. From there GoBot was born``. This project is still in early developement stages any changes may happen in future. ``Lets make our open community safe``
+
 GoBot Terminology
 ====================
 
@@ -140,3 +144,38 @@ As you can see story has following keys
 4. choice_fallback - Is what ``GoBot`` will say when user entered choices that are not present.
 
 
+## Linking intents with stories
+```
+gobot := core.NewGoBot(intents, stories)
+
+```
+
+## PlayGround
+This is a commandline playground of your created GoBot
+```
+playground(*gobot)
+
+```
+
+## Chatting with GoBot
+```
+key, response := Chat(*gobot, "hello")
+fmt.Println(key, response)
+
+```
+
+# Integration with WhatsApp
+```
+In progress
+```
+
+
+## Authors
+
+This package is authored and maintained by [Adam Reuben](https://github.com/adamwreuben/GoBot)
+
+## License
+
+MIT License
+
+Copyright (c) 2022 Adam Reuben
