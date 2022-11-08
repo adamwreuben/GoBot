@@ -102,6 +102,9 @@ func main() {
 	gobot := core.NewGoBot(intents, stories)
 	playground(*gobot)
 
+	// key, response := Chat(*gobot, "hello")
+	// fmt.Println(key, response)
+
 }
 
 func playground(goBot core.GoBot) {
