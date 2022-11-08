@@ -31,7 +31,7 @@ import (
 ```
 
 
-## Usage
+# Usage
 First you need to create ``Intent`` and ``stories`` variable of type ``map[string]interface{}`` inside your ``main.go`` as follows:
 ```
 intents := make(map[string]interface{})
@@ -39,7 +39,7 @@ stories := make(map[string]interface{})
 
 ```
 
-# Creating Intents
+## Creating Intents
 Then start creating intent, by providing key to intents as intent name as follows, In this demo we will create an ordering pizza chatbot, The followings are its intents, The following example was taken from [Sarfufi doc](https://docs.sarufi.io/docs/Getting%20started%20/create-a-simple-chatbot)
 
 ```
@@ -70,7 +70,7 @@ intents["order_pizza"] = []string{
 
 From above we have create 3 intents namely ``greets``,   ``cancel``,  ``order_pizza``
 
-# Creating stories (Dialog flow)
+## Creating stories (Dialog flow)
 Creating stories is simple, make sure that the ``Key name of the intent`` matches the ``key name of the story``, by doing so GoBot we know exactly which intent corresponds to what story.
 
 Example of stories according to our ordering pizza chatbot
