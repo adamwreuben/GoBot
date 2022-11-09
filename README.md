@@ -187,7 +187,7 @@ In Progress
 
 ## Authors
 
-This package is authored and maintained by [Adam Reuben](https://github.com/adamwreuben/GoBot)
+This package is authored and maintained by [who can drive boats](https://github.com/community)
 
 ## License
 
