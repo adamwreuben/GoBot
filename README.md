@@ -41,6 +41,11 @@ import (
 )
 ```
 
+## Uninstallation
+Simply uninstall with the `go get` command:
+```
+go get github.com/adamwreuben/GoBot@none
+```
 
 # Usage
 First you need to create ``Intent`` and ``stories`` variable of type ``map[string]interface{}`` inside your ``main.go`` as follows:

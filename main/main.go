@@ -52,7 +52,7 @@ func main() {
 	//creating stories
 
 	stories["kujiunga"] = map[string]interface{}{
-		"message": "Karibu sana ACT wazalendo, kujiunga na chama jaza taarifa kwenye fomu hii hapa chini\n\n https://www.google.com",
+		"message": "Karibu sana , kujiunga na chama jaza taarifa kwenye fomu hii hapa chini\n\n https://www.google.com",
 		"choices": nil,
 		"next":    nil, //nil means end
 	}
