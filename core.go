@@ -16,12 +16,14 @@ var userInputs string
 type GoBot struct {
 	Intent interface{} //This defines user intention
 	Story  interface{} //This drives conversational flow (dialog)
+	State  interface{}
 }
 
-func NewGoBot(intents interface{}, stories interface{}) *GoBot {
+func NewGoBot(intents interface{}, stories interface{}, state interface{}) *GoBot {
 	return &GoBot{
 		Intent: intents,
 		Story:  stories,
+		State:  state,
 	}
 }
 
@@ -105,8 +107,8 @@ func (gobot *GoBot) Playground() {
 		if len(text) != 0 {
 			// fmt.Println(text)
 			userInputs = text
-			_, response := gobot.Chat(text)
-			fmt.Println(response)
+			key, response := gobot.Chat(text)
+			fmt.Println("Intent: " + key + " ----- " + "Response: " + response)
 		} else {
 			// exit if user entered an empty string
 			break
@@ -150,6 +152,7 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 			} else {
 				// fmt.Println("Key when no interface: ", key)
 				if strings.Contains(key, "choices") {
+					choice_key := key
 					key := key[:len(key)-8]
 					story := goBotStories[key].(map[string]interface{})
 					next := story["next"]
@@ -179,8 +182,7 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 
 						for _, choice := range choices {
 							if strings.Contains(strings.ToLower(choice), message) {
-								// fmt.Println(choice)
-								return key, choice
+								return choice_key, choice
 							}
 						}
 
@@ -202,7 +204,7 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 		}
 
 	} else {
-		// fmt.Println("Key: ", key)
+		fmt.Println("Fallback Key: ", key)
 		fallbackObject := goBotStories["fallback"].(map[string]interface{})
 
 		//Check message type (string or []string{})
