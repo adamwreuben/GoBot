@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 var userInputs string
@@ -129,11 +131,21 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 			if storyObj != nil {
 				story := storyObj.(map[string]interface{})
 
-				//Becase choice depend from next
-				// fmt.Println("Key: real ", key)
-				// fmt.Println(story["message"])
+				//Check message type (string or []string{})
+				switch messageType := story["message"].(type) {
+				case string:
+					return key, story["message"].(string)
+				case []string:
+					messageSlice := story["message"].([]string)
 
-				return key, story["message"].(string)
+					//Randomize response (not suitable for security but to randomize our response is OK)
+					rand.Seed(time.Now().UnixNano())
+					randomValue := rand.Intn(len(messageSlice))
+					return key, messageSlice[randomValue]
+				default:
+					fmt.Printf("[]string: %v", messageType)
+					return key, "GoBot only support string and []string!"
+				}
 
 			} else {
 				// fmt.Println("Key when no interface: ", key)
@@ -144,8 +156,22 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 
 					if next != nil {
 						story := goBotStories[next.(string)].(map[string]interface{})
-						// fmt.Println(story["message"])
-						return key, story["message"].(string)
+
+						//Check message type (string or []string{})
+						switch messageType := story["message"].(type) {
+						case string:
+							return key, story["message"].(string)
+						case []string:
+							messageSlice := story["message"].([]string)
+
+							//Randomize response (not suitable for security but to randomize our response is OK)
+							rand.Seed(time.Now().UnixNano())
+							randomValue := rand.Intn(len(messageSlice))
+							return key, messageSlice[randomValue]
+						default:
+							fmt.Printf("[]string: %v", messageType)
+							return key, "GoBot only support string and []string!"
+						}
 
 					} else { // when next is Nil
 						story := goBotStories[key].(map[string]interface{})
@@ -163,6 +189,7 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 					}
 
 				} else {
+					// fmt.Println(key)
 					fmt.Println("interface is nil")
 					return "", ""
 
@@ -177,8 +204,21 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 	} else {
 		// fmt.Println("Key: ", key)
 		fallbackObject := goBotStories["fallback"].(map[string]interface{})
-		message := fallbackObject["message"]
-		// fmt.Println(message)
-		return key, message.(string)
+
+		//Check message type (string or []string{})
+		switch messageType := fallbackObject["message"].(type) {
+		case string:
+			return key, fallbackObject["message"].(string)
+		case []string:
+			messageSlice := fallbackObject["message"].([]string)
+
+			//Randomize response (not suitable for security but to randomize our response is OK)
+			rand.Seed(time.Now().UnixNano())
+			randomValue := rand.Intn(len(messageSlice))
+			return key, messageSlice[randomValue]
+		default:
+			fmt.Printf("[]string: %v", messageType)
+			return key, "GoBot only support string and []string!"
+		}
 	}
 }
