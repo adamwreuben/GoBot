@@ -176,6 +176,14 @@ fmt.Println(key, response)
 In progress
 ```
 
+# Integration with Telegram
+Integrating with Telegram, to create its chat bot we will use this awosome Open Source Library from [Golang-Tanzania](https://github.com/Golang-Tanzania/Group-Bot).
+
+```
+In Progress
+
+```
+
 
 ## Authors
 
