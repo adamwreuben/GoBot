@@ -30,7 +30,7 @@ GoBot Terminology
 
 Simply install with the `go get` command:
 ```
-go get github.com/adamwreuben/GoBot@v0.0.3
+go get github.com/adamwreuben/GoBot
 ```
 Then import it to your main package as:
 ```
@@ -136,6 +136,22 @@ stories["soda"] = map[string]interface{}{
 
 stories["fallback"] = map[string]interface{}{
 		"message": "Sijaelewa unataka nini?",
+		"choices": nil,
+		"next":    nil,
+	}
+
+```
+
+But also if you want you stories to answer user in random way, you do this. For example here, when the use type bye, GoBot should respond with words like ``Karibu tena`` or ``Bye, welcome again`` etc... To do so u need to use ``[]string struct`` other than ``string``
+
+Consider an example below
+
+```
+stories["goodbye"] = map[string]interface{}{
+		"message": []string{
+			"Karibu tena",
+			"Bye, welcome again",
+		},
 		"choices": nil,
 		"next":    nil,
 	}

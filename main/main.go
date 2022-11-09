@@ -1,6 +1,8 @@
 package main
 
-import "github.com/adamwreuben/GoBot"
+import (
+	"github.com/adamwreuben/GoBot"
+)
 
 func main() {
 	intents := make(map[string]interface{})
@@ -56,8 +58,12 @@ func main() {
 		"next":    nil,
 	}
 
+
 	stories["fallback"] = map[string]interface{}{
-		"message": "Sijaelewa unataka nini?",
+		"message": []string{
+			"Sijaelewa unataka nini?",
+			"Samahani sijakuelewa!, Jaribu kuandika saada?",
+		},
 		"choices": nil,
 		"next":    nil,
 	}
@@ -66,4 +72,7 @@ func main() {
 	goBot := GoBot.NewGoBot(intents, stories, nil)
 
 	goBot.Playground()
+
+	// _, response := goBot.Chat("kujiunga chama")
+	// fmt.Println(response)
 }
