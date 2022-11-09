@@ -7,40 +7,24 @@ import (
 func main() {
 	intents := make(map[string]interface{})
 	stories := make(map[string]interface{})
+	// states := make(map[string]interface{})
 
 	//Create intents
-	intents["kujiunga"] = []string{
-		"nataka kujiunga chama",
-		"kujiunga chama",
-		"jisali kwenye chama",
-		"sajili kwenye chama",
-		"niongeze kwenye chama",
-	}
-
-	intents["lipa"] = []string{
-		"lipa ada",
-		"nataka kulipa ada",
-		"nataka kutuma ada",
-		"lipia ada ya uanachama",
-		"lipia ada ya chama",
-		"tuma ada",
-	}
-
-	intents["repoti"] = []string{
-		"nataka repoti",
-		"nitumie report",
-		"naomba repoti ya mwezi huu",
-		"nataka repoti",
-		"repoti",
-		"repoti ipo wapi ya chama",
-	}
-
-	intents["sheria"] = []string{
-		"sheria za chama",
-		"sheria",
-		"sheria ni zipi",
-		"nataka sheria",
-		"naomba sheria",
+	intents["salam"] = []string{
+		"mambo",
+		"vipi",
+		"upo poa",
+		"fresh",
+		"nambie",
+		"nakuona",
+		"salama",
+		"za asubuhi",
+		"za mchana",
+		"uko poa",
+		"niaje",
+		"hello",
+		"oya",
+		"kama kawa",
 	}
 
 	intents["cancel"] = []string{
@@ -53,13 +37,19 @@ func main() {
 
 	//creating stories
 
-	stories["kujiunga"] = map[string]interface{}{
-		"message": []string{
-			"Karibu sana, nikuhudumie nini?",
-			"Habari, Karibu nikuhudumie",
+	stories["salam"] = map[string]interface{}{
+		"message": `Habari karibu sana TBC, sasa unaweza tuma ujumbe wako moja kwa moja kwenye kipindi ukipendacho`,
+		"salam_choices": []string{
+			"1. Busati",
+			"2. Sasambu",
+			"3. Sekeseke",
+			"4. Millazo EP",
+			"5. Simela",
+			"6. Kinaganaga",
+			"7. Papaso",
+			"8. Ligi Kuu Tanzania",
 		},
-		"choices": nil,
-		"next":    nil, //nil means end
+		"next": nil, //nil means end
 	}
 
 	stories["cancel"] = map[string]interface{}{
@@ -68,18 +58,6 @@ func main() {
 		"next":    nil,
 	}
 
-	stories["lipa"] = map[string]interface{}{
-		"message": []string{
-			"Lipa ada ya chama kupitia",
-		},
-		"lipa_choices": []string{
-			"1. Airtel Money",
-			"2. Mpesa",
-			"3. Tigo Pesa",
-		},
-		"next":            nil,
-		"choice_fallback": "Sorry, lipia kwa mitandao iliyopo!",
-	}
 
 	stories["fallback"] = map[string]interface{}{
 		"message": []string{
@@ -91,7 +69,7 @@ func main() {
 	}
 
 	//Create GoBot instance
-	goBot := GoBot.NewGoBot(intents, stories)
+	goBot := GoBot.NewGoBot(intents, stories, nil)
 
 	goBot.Playground()
 
