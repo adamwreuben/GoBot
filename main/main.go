@@ -1,6 +1,8 @@
 package main
 
-import "github.com/adamwreuben/GoBot"
+import (
+	"github.com/adamwreuben/GoBot"
+)
 
 func main() {
 	intents := make(map[string]interface{})
@@ -52,7 +54,10 @@ func main() {
 	//creating stories
 
 	stories["kujiunga"] = map[string]interface{}{
-		"message": "Karibu sana , kujiunga na chama jaza taarifa kwenye fomu hii hapa chini\n\n https://www.google.com",
+		"message": []string{
+			"Karibu sana, nikuhudumie nini?",
+			"Habari, Karibu nikuhudumie",
+		},
 		"choices": nil,
 		"next":    nil, //nil means end
 	}
@@ -63,14 +68,10 @@ func main() {
 		"next":    nil,
 	}
 
-	stories["repoti"] = map[string]interface{}{
-		"message": "https://firebasestorage.googleapis.com/v0/b/song-d1bd1.appspot.com/o/Reports%2FDebit%20Mandate_API%20Specification%20Document_Biller_v1.2.pdf?alt=media&token=9de278d6-c8ae-45a4-9a44-0db7f72bfd2b",
-		"choices": nil,
-		"next":    nil,
-	}
-
 	stories["lipa"] = map[string]interface{}{
-		"message": "Lipa ada ya chama kupitia",
+		"message": []string{
+			"Lipa ada ya chama kupitia",
+		},
 		"lipa_choices": []string{
 			"1. Airtel Money",
 			"2. Mpesa",
@@ -81,7 +82,10 @@ func main() {
 	}
 
 	stories["fallback"] = map[string]interface{}{
-		"message": "Sijaelewa unataka nini?",
+		"message": []string{
+			"Sijaelewa unataka nini?",
+			"Samahani sijakuelewa!, Jaribu kuandika saada?",
+		},
 		"choices": nil,
 		"next":    nil,
 	}
@@ -90,4 +94,7 @@ func main() {
 	goBot := GoBot.NewGoBot(intents, stories)
 
 	goBot.Playground()
+
+	// _, response := goBot.Chat("kujiunga chama")
+	// fmt.Println(response)
 }
