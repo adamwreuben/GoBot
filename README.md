@@ -142,6 +142,22 @@ stories["fallback"] = map[string]interface{}{
 
 ```
 
+But also if you want you stories to answer user in random way, you do this. For example here, when the use type bye, GoBot should respond with words like ``Karibu tena`` or ``Bye, welcome again`` etc... To do so u need to use ``[]string struct`` other than ``string``
+
+Consider an example below
+
+```
+stories["goodbye"] = map[string]interface{}{
+		"message": []string{
+			"Karibu tena",
+			"Bye, welcome again",
+		},
+		"choices": nil,
+		"next":    nil,
+	}
+
+```
+
 ``NB`` The following must be provided as ``AddOns`` to GoBot to ensure it can cancel execution when the user type ``Intents from cancel intent``
 From above stories, the following are Special stories key which are recognized by ``GoBot`` which are ``cancel`` - which is responsible to cancel any excution of the bot. and ``fallback`` - This is a default answer ``GoBot`` Gives when it doesn't understand the user intent.
 
