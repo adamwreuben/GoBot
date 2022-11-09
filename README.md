@@ -56,7 +56,7 @@ stories := make(map[string]interface{})
 ```
 
 ## Creating Intents
-Then start creating intent, by providing key to intents as intent name as follows, In this demo we will create an ordering pizza chatbot, The followings are its intents, The following example was taken from [Sarfufi doc](https://docs.sarufi.io/docs/Getting%20started%20/create-a-simple-chatbot)
+Then start creating intent, by providing key to intents as intent name as follows, In this demo we will create an ordering pizza chatbot, The followings are its intents.
 
 ```
 intents["greets"] = []string{

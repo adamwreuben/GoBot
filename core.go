@@ -181,5 +181,4 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 		// fmt.Println(message)
 		return key, message.(string)
 	}
-
 }
