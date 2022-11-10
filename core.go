@@ -31,6 +31,11 @@ type GoBotForm struct {
 	CancelMessage  string
 }
 
+type GoBotChoice struct {
+	Choices  []string
+	Variable string
+}
+
 type Form struct {
 	Variable string
 	Hint     string
@@ -105,36 +110,6 @@ func (gobot *GoBot) FindMessageKey(message string) string {
 			break
 		}
 
-	}
-
-	//Loop choices slice  *This is not good practice...Will be fixed as days goes on
-	if matchedKey == "" {
-		for key, story := range gobot.Story.(map[string]interface{}) {
-			//Check if story has choices
-			if strings.Contains(key, "choices") {
-				matchedKey = ""
-			} else {
-				choiceObject := story.(map[string]interface{})[key+"_choices"]
-				if choiceObject != nil {
-					for _, choice := range choiceObject.([]string) {
-						outerMatched = matchMessage.Matches(strings.ToLower(choice))
-						if outerMatched {
-							if strings.Contains(key, "choices") {
-								matchedKey = key
-							} else {
-								matchedKey = key + "_choices"
-							}
-							break
-						}
-					}
-				}
-
-				if outerMatched {
-					break
-				}
-			}
-
-		}
 	}
 
 	return matchedKey
