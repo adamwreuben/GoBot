@@ -323,7 +323,7 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 					Your age?
 					20
 				*/
-				summary := "Je unataka tutume tena majibu haya?\n\n"
+				summary := gobot.State.ActiveForm.ConfirmMessage + "\n\n"
 				for i := 0; i < len(gobot.State.ActiveForm.Answers); i++ {
 					summary += gobot.State.ActiveForm.Answers[i].Variable + "\n" + gobot.State.ActiveForm.Answers[i].Value + "\n"
 				}
