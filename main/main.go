@@ -35,6 +35,21 @@ func main() {
 		"funga",
 	}
 
+	intents["sajili"] = []string{
+		"nataka kujisajili",
+		"nataka kujiunga",
+		"add me",
+	}
+
+	intents["tuma"] = []string{
+		"tuma",
+		"ndio",
+		"sawa",
+		"forward",
+		"tuma sasa hivi",
+		"send",
+	}
+
 	//creating stories
 
 	stories["salam"] = map[string]interface{}{
@@ -49,29 +64,57 @@ func main() {
 			"7. Papaso",
 			"8. Ligi Kuu Tanzania",
 		},
+		"type": "choices",
 		"next": nil, //nil means end
+	}
+
+	stories["sajili"] = map[string]interface{}{
+		"message": "Tafadhali nipe majibu ya haya maswali?",
+		"type":    "form",
+		"sajili_form": GoBot.GoBotForm{
+			Header: "Karibu jaza maswali yafuatayo kwa usahihi",
+			Form: []GoBot.Form{
+				{
+					Variable: "name",
+					Hint:     "Jina lako nani?",
+				},
+				{
+					Variable: "age",
+					Hint:     "Una umri gani?",
+				},
+			},
+			IntentAction:   intents["tuma"].([]string),
+			IntentCancel:   intents["cancel"].([]string),
+			ConfirmMessage: "Tafadhali nijibu, nitume au nisitume?",
+			ActionMessage:  "Asante, taarifa zako, zimetumwa",
+			CancelMessage:  "Sijatuma taarifa zako, ukitaka kutuma tena, karibu sana!",
+		},
 	}
 
 	stories["cancel"] = map[string]interface{}{
 		"message": "Usijali, Karibu tena",
+		"type":    "default",
 		"choices": nil,
 		"next":    nil,
 	}
-
 
 	stories["fallback"] = map[string]interface{}{
 		"message": []string{
 			"Sijaelewa unataka nini?",
 			"Samahani sijakuelewa!, Jaribu kuandika saada?",
 		},
+		"type":    "default",
 		"choices": nil,
 		"next":    nil,
 	}
 
 	//Create GoBot instance
-	goBot := GoBot.NewGoBot(intents, stories, nil)
-
+	goBot := GoBot.NewGoBot(intents, stories)
+	// fmt.Println(goBot)
 	goBot.Playground()
+	// listId := "busatiId"
+	// kipind := listId[:len(listId)-2]
+	// fmt.Println(kipind)
 
 	// _, response := goBot.Chat("kujiunga chama")
 	// fmt.Println(response)
