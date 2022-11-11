@@ -30,7 +30,7 @@ GoBot Terminology
 
 Simply install with the `go get` command:
 ```
-go get github.com/adamwreuben/GoBot@v0.0.4
+go get github.com/adamwreuben/GoBot@v0.0.5
 ```
 Then import it to your main package as:
 ```
