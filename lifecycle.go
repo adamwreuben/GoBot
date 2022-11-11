@@ -1,11 +1,13 @@
 package GoBot
 
 type GoBotLifecycle struct {
-	ActiveStory     string
-	ActiceStoryType string
-	ActiveFormIds   []string
-	ActiveForm      GoBotForm
-	ActiveCounter   int
+	ActiveStory       string
+	ActiceStoryType   string
+	ActiveChoiceValue string
+	ActiveChoice      GoBotChoice
+	ActiveFormIds     []string
+	ActiveForm        GoBotForm
+	ActiveCounter     int
 }
 
 func NewLifecycle() *GoBotLifecycle {

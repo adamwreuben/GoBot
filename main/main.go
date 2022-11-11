@@ -54,15 +54,22 @@ func main() {
 
 	stories["salam"] = map[string]interface{}{
 		"message": `Habari karibu sana TBC, sasa unaweza tuma ujumbe wako moja kwa moja kwenye kipindi ukipendacho`,
-		"salam_choices": []string{
-			"1. Busati",
-			"2. Sasambu",
-			"3. Sekeseke",
-			"4. Millazo EP",
-			"5. Simela",
-			"6. Kinaganaga",
-			"7. Papaso",
-			"8. Ligi Kuu Tanzania",
+		"salam_choices": GoBot.GoBotChoice{
+			Header:               "Chagua kipindi?",
+			SuccessChoiceMessage: "Umechagua ",
+			ErrorChoiceMessage:   "Samahani hauna hicho kipindi!",
+			Choices: []string{
+				"Busati",
+				"Sasambu",
+				"Sekeseke",
+				"Millazo EP",
+				"Simela",
+				"Kinaganaga",
+				"Papaso",
+				"Ligi Kuu Tanzania",
+			},
+			IntentAction: intents["tuma"].([]string),
+			IntentCancel: intents["cancel"].([]string),
 		},
 		"type": "choices",
 		"next": nil, //nil means end

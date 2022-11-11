@@ -32,8 +32,12 @@ type GoBotForm struct {
 }
 
 type GoBotChoice struct {
-	Choices  []string
-	Variable string
+	Header               string
+	SuccessChoiceMessage string
+	ErrorChoiceMessage   string
+	IntentAction         []string
+	IntentCancel         []string
+	Choices              []string
 }
 
 type Form struct {
@@ -115,16 +119,6 @@ func (gobot *GoBot) FindMessageKey(message string) string {
 	return matchedKey
 }
 
-func (gobot *GoBot) FromJSON(r io.Reader) error {
-	e := json.NewDecoder(r)
-	return e.Decode(gobot)
-}
-
-func (gobot *GoBot) ToJSON(w io.Writer) error {
-	e := json.NewEncoder(w)
-	return e.Encode(gobot)
-}
-
 func (gobot *GoBot) Playground() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
@@ -176,8 +170,18 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 
 					}
 
-				} else {
+				} else if activeKey == key && activeStoryType == "choices" {
+					storyForm := story[key+"_choices"].(GoBotChoice)
+
+					if reflect.DeepEqual(gobot.State.ActiveForm, GoBotForm{}) {
+						gobot.State.ActiveChoice = storyForm
+						//Ask a first form data?
+						return key, storyForm.Header
+					}
+
 					//others
+				} else {
+					//Other
 				}
 
 				//Check message type (string or []string{})
@@ -198,78 +202,57 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 
 			} else {
 				// fmt.Println("Key when no interface: ", key)
-				if strings.Contains(key, "choices") {
-					choice_key := key
-					key := key[:len(key)-8]
-					story := goBotStories[key].(map[string]interface{})
-					next := story["next"]
 
-					if next != nil {
-						story := goBotStories[next.(string)].(map[string]interface{})
+				// fmt.Println(key)
+				if !reflect.DeepEqual(gobot.State.ActiveForm, GoBotForm{}) {
+					//check if user has entered value for IntentAction OR IntentCancel
+					hasAction := containsInSlices(gobot.State.ActiveForm.IntentAction, message)
+					hasCancel := containsInSlices(gobot.State.ActiveForm.IntentCancel, message)
 
-						//Check message type (string or []string{})
-						switch messageType := story["message"].(type) {
-						case string:
-							return key, story["message"].(string)
-						case []string:
-							messageSlice := story["message"].([]string)
+					//Do this before clearly gobot lifecycle in memory
+					actionMessage := gobot.State.ActiveForm.ActionMessage
+					actionCancel := gobot.State.ActiveForm.CancelMessage
+					actionConfirm := gobot.State.ActiveForm.CancelMessage
 
-							//Randomize response (not suitable for security but to randomize our response is OK)
-							rand.Seed(time.Now().UnixNano())
-							randomValue := rand.Intn(len(messageSlice))
-							return key, messageSlice[randomValue]
-						default:
-							fmt.Printf("[]string: %v", messageType)
-							return key, "GoBot only support string and []string!"
-						}
+					gobot.State.ActiveForm = GoBotForm{}
+					gobot.State.ActiveCounter = 0
+					gobot.State.ActiceStoryType = ""
+					gobot.State.ActiveStory = ""
+					gobot.State.ActiveFormIds = []string{}
 
-					} else { // when next is Nil
-						story := goBotStories[key].(map[string]interface{})
-						choices := story[key+"_"+"choices"].([]string)
-
-						for _, choice := range choices {
-							if strings.Contains(strings.ToLower(choice), message) {
-								return choice_key, choice
-							}
-						}
-
-						return key, "Asante sana"
-
-					}
-
-				} else {
-					// fmt.Println(key)
-					if !reflect.DeepEqual(gobot.State.ActiveForm, GoBotForm{}) {
-						//check if user has entered value for IntentAction OR IntentCancel
-						hasAction := containsInSlices(gobot.State.ActiveForm.IntentAction, message)
-						hasCancel := containsInSlices(gobot.State.ActiveForm.IntentCancel, message)
-
-						//Do this before clearly gobot lifecycle in memory
-						actionMessage := gobot.State.ActiveForm.ActionMessage
-						actionCancel := gobot.State.ActiveForm.CancelMessage
-						actionConfirm := gobot.State.ActiveForm.CancelMessage
-
-						gobot.State.ActiveForm = GoBotForm{}
-						gobot.State.ActiveCounter = 0
-						gobot.State.ActiceStoryType = ""
-						gobot.State.ActiveStory = ""
-						gobot.State.ActiveFormIds = []string{}
-
-						if hasAction {
-							return key, actionMessage
-						} else if hasCancel {
-							return key, actionCancel
-						} else {
-							return key, actionConfirm
-						}
-
+					if hasAction {
+						return key, actionMessage
+					} else if hasCancel {
+						return key, actionCancel
 					} else {
-						fmt.Println("interface is nil")
-						return key, ""
-
+						return key, actionConfirm
 					}
+
+				} else if !reflect.DeepEqual(gobot.State.ActiveChoice, GoBotChoice{}) {
+					hasAction := containsInSlices(gobot.State.ActiveChoice.IntentAction, message)
+					hasCancel := containsInSlices(gobot.State.ActiveChoice.IntentCancel, message)
+
+					//Do this before clearly gobot lifecycle in memory
+					// successChoiceMessage := gobot.State.ActiveChoice.SuccessChoiceMessage
+					errorChoiceMessage := gobot.State.ActiveChoice.ErrorChoiceMessage
+					choice := gobot.State.ActiveChoiceValue
+
+					gobot.State.ActiveChoice = GoBotChoice{}
+					gobot.State.ActiveChoiceValue = ""
+
+					if hasAction {
+						return key, choice
+					} else if hasCancel {
+						return key, errorChoiceMessage
+					} else {
+						return key, errorChoiceMessage
+					}
+				} else {
+					fmt.Println("interface is nil")
+					return key, ""
 
 				}
+
 			}
 		} else {
 			// fmt.Println("Key: ", key)
@@ -306,6 +289,14 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 				return key, summary
 
 			}
+		} else if !reflect.DeepEqual(gobot.State.ActiveChoice, GoBotChoice{}) {
+			for _, choice := range gobot.State.ActiveChoice.Choices {
+				if strings.ToLower(choice) == strings.ToLower(message) {
+					gobot.State.ActiveChoiceValue = message
+					return "key", gobot.State.ActiveChoice.SuccessChoiceMessage + " " + message
+				}
+			}
+			return "key", gobot.State.ActiveChoice.ErrorChoiceMessage
 		} else {
 			fallbackObject := goBotStories["fallback"].(map[string]interface{})
 
@@ -327,4 +318,14 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 		}
 
 	}
+}
+
+func (gobot *GoBot) FromJSON(r io.Reader) error {
+	e := json.NewDecoder(r)
+	return e.Decode(gobot)
+}
+
+func (gobot *GoBot) ToJSON(w io.Writer) error {
+	e := json.NewEncoder(w)
+	return e.Encode(gobot)
 }
