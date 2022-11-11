@@ -67,20 +67,26 @@ intents["greets"] = []string{
 		"Za mchana",
 		"Za usiku",
 		"Hola",
-	}
+}
+
+intents["sajili"] = []string{
+		"nataka kujisajili",
+		"nataka kujiunga",
+		"add me",
+}
 
 intents["cancel"] = []string{
 		"sitisha",
 		"acha",
 		"cancel",
 		"sitaki",
-	}
+}
 
 intents["order_pizza"] = []string{
 		"Nataka pizza",
 		"I need pizza",
 		"I want Pizza",
-	}
+}
 
 ```
 
@@ -96,49 +102,69 @@ stories["greets"] = map[string]interface{}{
 		"message": "Helo, Karibu nikusaidiaje?",
 		"choices": nil,
 		"next":    nil, //nil means end
-	}
+}
 
 stories["goodbye"] = map[string]interface{}{
 		"message": "Karibu tena",
 		"choices": nil,
 		"next":    nil,
-	}
+}
 
 stories["cancel"] = map[string]interface{}{
 		"message": "Karibu tena",
 		"choices": nil,
 		"next":    nil,
-	}
+}
 
-	
 stories["order_pizza"] = map[string]interface{}{
 		"message": "Unataka pizza gani?",
-		"order_pizza_choices": []string{
-			"1. Chicken Pizza",
-			"2. Cheese Pizza",
-			"3. Mixture Pizza",
-			"4. Skyline Pizza",
+		"order_pizza_choices": GoBot.GoBotChoice{
+			Header:               "Unataka pizza gani?",
+			SuccessChoiceMessage: "Karibu tena!",
+			ErrorChoiceMessage:   "Samahani pizza uliochagua haipo!",
+			Choices: []string{
+				"Chicken Pizza",
+				"Cheese Pizza",
+				"Mixture Pizza",
+				"Skyline Pizza",
 		},
-		"next":            "soda",
-		"choice_fallback": "Sorry, hatuna aina hio ya pizza!",
-	}
+			IntentAction: intents["tuma"].([]string),
+			IntentCancel: intents["cancel"].([]string),
+		},
+		"type": "choices",
+		"next": nil, //nil means end
+}
+	
 
-stories["soda"] = map[string]interface{}{
-		"message": "Unakata kinywaji gani?",
-		"soda_choices": []string{
-			"1. Pepsi",
-			"2. Cocacola",
-			"3. Sprite",
-			"4. Mirinda",
+stories["sajili"] = map[string]interface{}{
+		"message": "Tafadhali nipe majibu ya haya maswali?",
+		"type":    "form",
+		"sajili_form": GoBot.GoBotForm{
+			Header: "Karibu jaza maswali yafuatayo kwa usahihi",
+			Form: []GoBot.Form{
+				{
+					Variable: "name",
+					Hint:     "Jina lako nani?",
+				},
+				{
+					Variable: "age",
+					Hint:     "Una umri gani?",
+				},
+			},
+			IntentAction:   intents["tuma"].([]string),
+			IntentCancel:   intents["cancel"].([]string),
+			ConfirmMessage: "Tafadhali nijibu, nitume au nisitume?",
+			ActionMessage:  "Asante, taarifa zako, zimetumwa",
+			CancelMessage:  "Sijatuma taarifa zako, ukitaka kutuma tena, karibu sana!",
 		},
-		"choice_fallback": "Sorry, hatuna aina hio ya soda!",
-	}
+}
 
 stories["fallback"] = map[string]interface{}{
 		"message": "Sijaelewa unataka nini?",
+		"type":"default",
 		"choices": nil,
 		"next":    nil,
-	}
+}
 
 ```
 
