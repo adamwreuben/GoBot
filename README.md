@@ -155,7 +155,7 @@ stories["sajili"] = map[string]interface{}{
 			IntentCancel:   intents["cancel"].([]string),
 			ConfirmMessage: "Tafadhali nijibu, nitume au nisitume?",
 			ActionMessage:  "Asante, taarifa zako, zimetumwa",
-			CancelMessage:  "Sijatuma taarifa zako, ukitaka kutuma tena, karibu sana!",
+			CancelMessage:  "Sijatuma taarifa zako, ukitaka kutuma tena, karibu sana",
 		},
 }
 
