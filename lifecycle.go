@@ -1,14 +1,18 @@
 package GoBot
 
 type GoBotLifecycle struct {
-	ActiveStory       string
-	ActiceStoryType   string
-	ActiveChoiceValue string
-	ActiveChoice      GoBotChoice
-	NextStory         string
-	ActiveFormIds     []string
-	ActiveForm        GoBotForm
-	ActiveCounter     int
+	ActiveStory         string
+	ActiceStoryType     string
+	ActiceNextStoryType string
+	ActiveChoiceValue   string
+	ActiveChoice        GoBotChoice
+	NextStory           string
+	ActiveFormIds       []string
+	ActiveForm          GoBotForm
+	ActiveInput         GoBotInput
+	ActiveInputValue    string
+	ActiveCounter       int
+	SavedResults        map[string]interface{}
 }
 
 func NewLifecycle() *GoBotLifecycle {
@@ -20,15 +24,16 @@ func (goBotLifecycle *GoBotLifecycle) SetState(state string, storyType string) {
 	goBotLifecycle.ActiceStoryType = storyType
 }
 
-func (goBotLifecycle *GoBotLifecycle) SetNextStory(nextStory string) {
+func (goBotLifecycle *GoBotLifecycle) SetNextStory(nextStory string, storyType string) {
 	goBotLifecycle.NextStory = nextStory
+	goBotLifecycle.ActiceNextStoryType = storyType
 }
 
-func (goBotLifecycle *GoBotLifecycle) GetNextStory() string {
+func (goBotLifecycle *GoBotLifecycle) GetNextStory() (string, string) {
 	if goBotLifecycle.NextStory != "" {
-		return goBotLifecycle.NextStory
+		return goBotLifecycle.NextStory, goBotLifecycle.ActiceNextStoryType
 	} else {
-		return ""
+		return "", ""
 	}
 }
 
@@ -36,6 +41,6 @@ func (goBotLifecycle *GoBotLifecycle) GetState() (string, string) {
 	if goBotLifecycle.ActiveStory != "" {
 		return goBotLifecycle.ActiveStory, goBotLifecycle.ActiceStoryType
 	} else {
-		return "default", "default"
+		return "", ""
 	}
 }

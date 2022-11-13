@@ -5,6 +5,18 @@ import (
 )
 
 func main() {
+
+	/**
+	Types
+
+	- choices
+	- form -- multiple
+	- response --- just echos
+	- input  --- single capture user input
+
+
+	*/
+
 	intents := make(map[string]interface{})
 	stories := make(map[string]interface{})
 	// states := make(map[string]interface{})
@@ -33,6 +45,12 @@ func main() {
 		"cancel",
 		"sitaki",
 		"funga",
+	}
+
+	intents["match"] = []string{
+		"timu yako ni?",
+		"timu",
+		"unapenda team gani?",
 	}
 
 	intents["sajili"] = []string{
@@ -72,7 +90,7 @@ func main() {
 			IntentCancel: intents["cancel"].([]string),
 		},
 		"type": "choices",
-		"next": nil, //nil means end
+		"next": "tayari", //nil means end
 	}
 
 	stories["sajili"] = map[string]interface{}{
@@ -123,9 +141,33 @@ func main() {
 		"next": nil,
 	}
 
+	stories["tayari"] = map[string]interface{}{
+		"message": "Asante kwa kuchagua",
+		"type":    "respond",
+		"choices": nil,
+		"next":    nil,
+	}
+
+	stories["match"] = map[string]interface{}{
+		"message": "Unapenda team gani?",
+		"type":    "input",
+		"match_input": GoBot.GoBotInput{
+			Header: "Unapenda team gani?",
+			Form: GoBot.Form{
+				Variable: "team",
+				Hint:     "Unapenda team gani?",
+			},
+			IntentAction:         intents["tuma"].([]string),
+			IntentCancel:         intents["cancel"].([]string),
+			SuccessChoiceMessage: "",
+			ErrorChoiceMessage:   "Tafadhali nipe jibu",
+		},
+		"next": nil,
+	}
+
 	stories["cancel"] = map[string]interface{}{
 		"message": "Usijali, Karibu tena",
-		"type":    "default",
+		"type":    "response",
 		"choices": nil,
 		"next":    nil,
 	}

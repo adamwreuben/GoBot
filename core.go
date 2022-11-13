@@ -31,6 +31,15 @@ type GoBotForm struct {
 	CancelMessage  string
 }
 
+type GoBotInput struct {
+	Header               string
+	Form                 Form
+	IntentAction         []string
+	IntentCancel         []string
+	SuccessChoiceMessage string
+	ErrorChoiceMessage   string
+}
+
 type GoBotChoice struct {
 	Header               string
 	SuccessChoiceMessage string
@@ -82,13 +91,22 @@ func (gobot *GoBot) FindMessageKey(message string) string {
 					if storyType == "form" {
 						storyForm := story[matchedKey+"_form"].(GoBotForm)
 						//Set GoBot Lifecycle Key, and type
-						gobot.State.ActiveStory = key
-						gobot.State.ActiceStoryType = storyType
+						gobot.State.SetState(key, storyType)
 
 						//Get Next story if any
 						nextStory := story["next"]
 						if nextStory != nil {
-							gobot.State.NextStory = nextStory.(string)
+							//Find type of next story
+							goBotStories := gobot.Story.(map[string]interface{})
+							storyObj := goBotStories[nextStory.(string)]
+							if storyObj != nil {
+								story := storyObj.(map[string]interface{})
+								gobot.State.SetNextStory(nextStory.(string), story["type"].(string))
+							} else {
+								fmt.Println("Please set type on ", nextStory.(string), " story")
+							} // TODO HANDLING ERRORs
+						} else {
+							gobot.State.SetNextStory("", "")
 						}
 
 						//Get all form ids and set them to gobot lifecycle
@@ -98,20 +116,45 @@ func (gobot *GoBot) FindMessageKey(message string) string {
 
 					} else if storyType == "choices" {
 						//Set GoBot Lifecycle Key, and type
-						gobot.State.ActiveStory = key
-						gobot.State.ActiceStoryType = storyType
+						gobot.State.SetState(key, storyType)
 
 						//Get Next story if any
 						nextStory := story["next"]
 						if nextStory != nil {
-							gobot.State.NextStory = nextStory.(string)
+							//Find type of next story
+							goBotStories := gobot.Story.(map[string]interface{})
+							storyObj := goBotStories[nextStory.(string)]
+							if storyObj != nil {
+								story := storyObj.(map[string]interface{})
+								gobot.State.SetNextStory(nextStory.(string), story["type"].(string))
+
+							} else {
+								fmt.Println("Please set type on ", nextStory.(string), " story")
+							}
+						} else {
+							gobot.State.SetNextStory("", "")
 						}
 
+					} else if storyType == "input" {
+						gobot.State.SetState(key, storyType)
+						//Get Next story if any
+						nextStory := story["next"]
+						if nextStory != nil {
+							//Find type of next story
+							goBotStories := gobot.Story.(map[string]interface{})
+							storyObj := goBotStories[nextStory.(string)]
+							if storyObj != nil {
+								story := storyObj.(map[string]interface{})
+								gobot.State.SetNextStory(nextStory.(string), story["type"].(string))
+
+							} else {
+								fmt.Println("Please set type on ", nextStory.(string), " story")
+							}
+						}
 					} else {
-						//Normal story a message one
+						//Echo response to user only
 						//Set GoBot Lifecycle Key, and type
-						gobot.State.ActiveStory = key
-						gobot.State.ActiceStoryType = "default"
+						gobot.State.SetState(key, "response")
 
 						//Get Next story if any
 						nextStory := story["next"]
@@ -141,7 +184,7 @@ func (gobot *GoBot) Playground() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		if userInputs == "" {
-			fmt.Print("Start chatting:\n")
+			fmt.Print("Start chatting with your Bot:\n")
 		}
 		// reads user input until \n by default
 		scanner.Scan()
@@ -177,29 +220,15 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 				story := storyObj.(map[string]interface{})
 
 				activeKey, activeStoryType := gobot.State.GetState()
+
 				if activeKey == key && activeStoryType == "form" {
-					storyForm := story[key+"_form"].(GoBotForm)
-
-					if reflect.DeepEqual(gobot.State.ActiveForm, GoBotForm{}) {
-						gobot.State.ActiveCounter = 0 //This will help us iterate through forms data slice
-						gobot.State.ActiveForm = storyForm
-						//Ask a first form data?
-						return key, storyForm.Form[gobot.State.ActiveCounter].Hint
-
-					}
-
+					return gobot.CheckingGoBotState(key, activeKey, activeStoryType)
 				} else if activeKey == key && activeStoryType == "choices" {
-					storyForm := story[key+"_choices"].(GoBotChoice)
-
-					if reflect.DeepEqual(gobot.State.ActiveForm, GoBotForm{}) {
-						gobot.State.ActiveChoice = storyForm
-						//Ask a first form data?
-						return key, storyForm.Header
-					}
-
-					//others
+					return gobot.CheckingGoBotState(key, activeKey, activeStoryType)
+				} else if activeKey == key && activeStoryType == "input" {
+					return gobot.CheckingGoBotState(key, activeKey, activeStoryType)
 				} else {
-					//Other
+
 				}
 
 				//Check message type (string or []string{})
@@ -265,6 +294,25 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 					} else {
 						return key, errorChoiceMessage
 					}
+				} else if !reflect.DeepEqual(gobot.State.ActiveInput, GoBotChoice{}) {
+					hasAction := containsInSlices(gobot.State.ActiveInput.IntentAction, message)
+					hasCancel := containsInSlices(gobot.State.ActiveInput.IntentCancel, message)
+
+					//Do this before clearly gobot lifecycle in memory
+					// successChoiceMessage := gobot.State.ActiveChoice.SuccessChoiceMessage
+					errorInputMessage := gobot.State.ActiveInput.ErrorChoiceMessage
+					input := gobot.State.ActiveInputValue
+
+					gobot.State.ActiveChoice = GoBotChoice{}
+					gobot.State.ActiveChoiceValue = ""
+
+					if hasAction {
+						return key, input
+					} else if hasCancel {
+						return key, errorInputMessage
+					} else {
+						return key, errorInputMessage
+					}
 				} else {
 					fmt.Println("interface is nil")
 					return key, ""
@@ -275,6 +323,8 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 		} else {
 			// fmt.Println("Key: ", key)
 			// fmt.Println("Karibu tena")
+			//Reset GoBotLifecycle
+			gobot.State = GoBotLifecycle{}
 			return key, "Karibu tena"
 		}
 
@@ -299,21 +349,144 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 					Your age?
 					20
 				*/
+
+				answerObject := make(map[string]interface{})
+
+				prevKey, _ := gobot.State.GetState()
+				nextKey, nextType := gobot.State.GetNextStory()
+
 				summary := gobot.State.ActiveForm.ConfirmMessage + "\n\n"
 				for i := 0; i < len(gobot.State.ActiveForm.Answers); i++ {
+
+					if nextKey != "" {
+						answerObject[key] = map[string]interface{}{
+							gobot.State.ActiveForm.Answers[i].Variable: gobot.State.ActiveForm.Answers[i].Value,
+						}
+					}
+
 					summary += gobot.State.ActiveForm.Answers[i].Variable + "\n" + gobot.State.ActiveForm.Answers[i].Value + "\n"
+				}
+
+				//If it meant all requirement.... it goes to next story
+				if nextKey != "" {
+
+					//initialize SaveResults map
+					gobot.State.SavedResults = make(map[string]interface{})
+					//save the result according to story key in Gobot lifecycle object
+					gobot.State.SavedResults[prevKey] = answerObject
+
+					//After saving the results ,,,,, Free GoBotForm to be used by another story
+					if nextKey != prevKey {
+						gobot.State.ActiveForm = GoBotForm{}
+						gobot.State.ActiveCounter = 0
+						//Set state for upcoming story
+						gobot.State.SetState(nextKey, nextType)
+
+						activeKey, activeStoryType := gobot.State.GetState()
+						return gobot.CheckingGoBotState(nextKey, activeKey, activeStoryType)
+					}
+
+				} else {
+					fmt.Println("No next story")
+					gobot.State.SetNextStory("", "")
 				}
 
 				return key, summary
 
 			}
 		} else if !reflect.DeepEqual(gobot.State.ActiveChoice, GoBotChoice{}) {
+			answerObject := make(map[string]interface{})
+
+			prevKey, _ := gobot.State.GetState()
+			nextKey, nextType := gobot.State.GetNextStory()
+
 			for _, choice := range gobot.State.ActiveChoice.Choices {
 				if strings.ToLower(choice) == strings.ToLower(message) {
+					if nextKey != "" {
+						answerObject[key] = map[string]interface{}{
+							"answer": message,
+						}
+					}
 					gobot.State.ActiveChoiceValue = message
 					return "key", gobot.State.ActiveChoice.SuccessChoiceMessage + " " + message
 				}
 			}
+
+			//If it meant all requirement.... it goes to next story
+			if nextKey != "" {
+
+				//initialize SaveResults map
+				gobot.State.SavedResults = make(map[string]interface{})
+				//save the result according to story key in Gobot lifecycle object
+				gobot.State.SavedResults[prevKey] = answerObject
+
+				//After saving the results ,,,,, Free GoBotForm to be used by another story
+				if nextKey != prevKey {
+					gobot.State.ActiveChoice = GoBotChoice{}
+					//Set state for upcoming story
+					gobot.State.SetState(nextKey, nextType)
+
+					activeKey, activeStoryType := gobot.State.GetState()
+					return gobot.CheckingGoBotState(nextKey, activeKey, activeStoryType)
+				}
+
+			} else {
+				gobot.State.SavedResults = make(map[string]interface{})
+				//save the result according to story key in Gobot lifecycle object
+				gobot.State.SavedResults[prevKey] = answerObject
+				fmt.Println("No next story")
+				gobot.State.SetNextStory("", "")
+			}
+
+			return "key", gobot.State.ActiveChoice.ErrorChoiceMessage
+		} else if !reflect.DeepEqual(gobot.State.ActiveInput, GoBotInput{}) {
+			answerObject := make(map[string]interface{})
+
+			prevKey, _ := gobot.State.GetState()
+			nextKey, nextType := gobot.State.GetNextStory()
+
+			gobot.State.ActiveInputValue = message
+
+			if nextKey != "" {
+				answerObject[key] = map[string]interface{}{
+					"answer": message,
+				}
+			} else {
+				answerObject[key] = map[string]interface{}{
+					"answer": message,
+				}
+			}
+
+			//return "key", gobot.State.ActiveChoice.SuccessChoiceMessage + " " + message
+
+			//If it meant all requirement.... it goes to next story
+			if nextKey != "" {
+
+				//initialize SaveResults map
+				gobot.State.SavedResults = make(map[string]interface{})
+				//save the result according to story key in Gobot lifecycle object
+				gobot.State.SavedResults[prevKey] = answerObject
+
+				//After saving the results ,,,,, Free GoBotForm to be used by another story
+				if nextKey != prevKey {
+					gobot.State.ActiveInput = GoBotInput{}
+					//Set state for upcoming story
+					gobot.State.SetState(nextKey, nextType)
+
+					activeKey, activeStoryType := gobot.State.GetState()
+					return gobot.CheckingGoBotState(nextKey, activeKey, activeStoryType)
+				}
+
+			} else {
+				fmt.Println("No next story")
+				gobot.State.SavedResults = make(map[string]interface{})
+				//save the result according to story key in Gobot lifecycle object
+				gobot.State.SavedResults[prevKey] = answerObject
+
+				gobot.State.SetNextStory("", "")
+
+			}
+
 			return "key", gobot.State.ActiveChoice.ErrorChoiceMessage
 		} else {
 			fallbackObject := goBotStories["fallback"].(map[string]interface{})
@@ -336,6 +509,55 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 		}
 
 	}
+}
+
+func (gobot *GoBot) CheckingGoBotState(key string, activeKey string, activeStoryType string) (string, string) {
+	goBotStories := gobot.Story.(map[string]interface{})
+	storyObj := goBotStories[key]
+
+	story := storyObj.(map[string]interface{})
+
+	if key != "cancel" {
+
+		if activeKey == key && activeStoryType == "form" {
+			storyForm := story[key+"_form"].(GoBotForm)
+
+			if reflect.DeepEqual(gobot.State.ActiveForm, GoBotForm{}) {
+
+				gobot.State.ActiveCounter = 0 //This will help us iterate through forms data slice
+				gobot.State.ActiveForm = storyForm
+				//Ask a first form data?
+				return key, storyForm.Form[gobot.State.ActiveCounter].Hint
+
+			}
+
+		} else if activeKey == key && activeStoryType == "choices" {
+			storyForm := story[key+"_choices"].(GoBotChoice)
+
+			if reflect.DeepEqual(gobot.State.ActiveForm, GoBotForm{}) {
+				gobot.State.ActiveChoice = storyForm
+				//Ask a first form data?
+				return key, storyForm.Header
+			}
+
+			//others
+		} else if activeKey == key && activeStoryType == "input" {
+			storyForm := story[key+"_input"].(GoBotInput)
+			if reflect.DeepEqual(gobot.State.ActiveForm, GoBotForm{}) {
+				gobot.State.ActiveInput = storyForm
+				//Ask a first form data?
+				return key, storyForm.Header
+			}
+		} else {
+			//Other
+			return key, ""
+		}
+
+		return key, ""
+	} else {
+		return key, "Karibu tena"
+	}
+
 }
 
 func (gobot *GoBot) FromJSON(r io.Reader) error {
