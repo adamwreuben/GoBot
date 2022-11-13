@@ -96,6 +96,31 @@ func main() {
 			ActionMessage:  "Asante, taarifa zako, zimetumwa",
 			CancelMessage:  "Sijatuma taarifa zako, ukitaka kutuma tena, karibu sana!",
 		},
+		"next": "address",
+	}
+
+	stories["address"] = map[string]interface{}{
+		"message": "Ningependa kujua umezaliwa wapi?",
+		"type":    "form",
+		"address_form": GoBot.GoBotForm{
+			Header: "Ningependa kujua umezaliwa wapi?",
+			Form: []GoBot.Form{
+				{
+					Variable: "mkoa",
+					Hint:     "Unaishi wapi?",
+				},
+				{
+					Variable: "wazazi",
+					Hint:     "Wazazi wako wapi sasa?",
+				},
+			},
+			IntentAction:   intents["tuma"].([]string),
+			IntentCancel:   intents["cancel"].([]string),
+			ConfirmMessage: "Tafadhali nijibu, nitume au nisitume?",
+			ActionMessage:  "Asante, taarifa zako, zimetumwa",
+			CancelMessage:  "Sijatuma taarifa zako, ukitaka kutuma tena, karibu sana!",
+		},
+		"next": nil,
 	}
 
 	stories["cancel"] = map[string]interface{}{

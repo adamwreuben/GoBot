@@ -85,6 +85,12 @@ func (gobot *GoBot) FindMessageKey(message string) string {
 						gobot.State.ActiveStory = key
 						gobot.State.ActiceStoryType = storyType
 
+						//Get Next story if any
+						nextStory := story["next"]
+						if nextStory != nil {
+							gobot.State.NextStory = nextStory.(string)
+						}
+
 						//Get all form ids and set them to gobot lifecycle
 						for _, form := range storyForm.Form {
 							gobot.State.ActiveFormIds = append(gobot.State.ActiveFormIds, form.Variable)
@@ -95,11 +101,23 @@ func (gobot *GoBot) FindMessageKey(message string) string {
 						gobot.State.ActiveStory = key
 						gobot.State.ActiceStoryType = storyType
 
+						//Get Next story if any
+						nextStory := story["next"]
+						if nextStory != nil {
+							gobot.State.NextStory = nextStory.(string)
+						}
+
 					} else {
 						//Normal story a message one
 						//Set GoBot Lifecycle Key, and type
 						gobot.State.ActiveStory = key
 						gobot.State.ActiceStoryType = "default"
+
+						//Get Next story if any
+						nextStory := story["next"]
+						if nextStory != nil {
+							gobot.State.NextStory = nextStory.(string)
+						}
 					}
 				} else {
 					//Return Error() --> no such story
