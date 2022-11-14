@@ -54,38 +54,148 @@ stories := make(map[string]interface{})
 
 ```
 
+# GoBot story types
+``echo`` - This is the default story that echo back to user
+
+Example of ``echo`` story below:
+```
+stories["greeting"] = map[string]interface{}{
+		"message": []string{
+			"Welcom to Pizza plaza, what can i help you",
+			"Hello, welcome, what can i do for you?",
+		},
+		"type": "echo", //GoBot stories must have types
+		"next": nil,
+	}
+
+```
+
+
+
+``form`` - This is the story that ask user a couple of questions and save it in memory
+Example of ``form`` story below:
+```
+stories["registration"] = map[string]interface{}{
+		"message": "Welcome to Pizza social club",
+		"type":    "form",
+		"sajili_form": GoBot.GoBotForm{
+			Header: "Please answer the following question to register you, to our club!",
+			Form: []GoBot.Form{
+				{
+					Variable: "name",
+					Hint:     "Your full name",
+				},
+				{
+					Variable: "age",
+					Hint:     "Your age?",
+				},
+			},
+			IntentAction:   intents["send"].([]string),
+			IntentCancel:   intents["cancel"].([]string),
+			ConfirmMessage: "Do you confirm that you have provided, real information",
+			ActionMessage:  "Thanks, your information has been sent!",
+			CancelMessage:  "Sorry, answer all questions needed!",
+		},
+		"next": nil,
+	}
+
+```
+
+
+``choices`` - This is the story where user has to select one choice out of many options
+Example of ``choices`` story below:
+```
+stories["order"] = map[string]interface{}{
+		"message": `Please choose pizza you want?`,
+		"order_choices": GoBot.GoBotChoice{ // Note here key of story is written in this format key_name_choices
+			Header:               "The following is our menu\n1. Cheese Pizza\n2. Chicken Pizza\n3.Sausage Pizza\n\n#Please select our choice",
+			SuccessChoiceMessage: "Thanks for choosing, your order is being processed",
+			ErrorChoiceMessage:   "Sorry the choice you selected, is not present by now!",
+			Choices: []string{
+				"Cheese Pizza",
+				"Chicken Pizza",
+				"Sausage Pizza",
+			},
+			IntentAction: intents["action"].([]string),
+			IntentCancel: intents["cancel"].([]string),
+		},
+		"type": "choices", // type of choices
+		"next": nil, //nil means end
+	}
+
+```
+
+
+``input`` - This is the story that save user answer in memory GoBot Instance
+Example of ``input`` story below:
+```
+stories["order_number"] = map[string]interface{}{
+		"message": "Unapenda team gani?",
+		"type":    "input",
+		"order_number_input": GoBot.GoBotInput{
+			Header: "How many do you want?",
+			Form: GoBot.Form{
+				Variable: "size",
+				Hint:     "How many pizza do you want?",
+			},
+			IntentAction:        intents["action"].([]string),
+			IntentCancel:        intents["cancel"].([]string),
+			SuccessInputMessage: "#Thanks your order is being processed\n#OrderId: 23434",
+			ErrorInputMessage:   "Please tell me, how many pizza do you want?",
+		},
+		"next": nil,
+	}
+
+```
+
+
 ## Creating Intents
 Then start creating intent, by providing key to intents as intent name as follows, In this demo we will create an ordering pizza chatbot, The followings are its intents.
 
 ```
-intents["greets"] = []string{
-		"Hello",
-		"Hi",
-		"Mambo",
-		"Za asubuhi",
-		"Za mchana",
-		"Za usiku",
-		"Hola",
-}
+intents["greeting"] = []string{
+		"hello",
+		"hi",
+		"how are you",
+		"morning",
+		"afternoon",
+		"evening",
+	}
 
-intents["sajili"] = []string{
-		"nataka kujisajili",
-		"nataka kujiunga",
-		"add me",
-}
+	intents["order"] = []string{
+		"order pizza",
+		"i want pizza",
+		"i want piza",
+		"i want piz",
+		"give me piza",
+		"give me pizza",
+		"pizza",
+		"piza",
+		"piz",
+	}
 
-intents["cancel"] = []string{
-		"sitisha",
-		"acha",
+	intents["menu"] = []string{
+		"what pizza do you have",
+		"menu",
+		"menu please",
+	}
+
+	intents["action"] = []string{
+		"yes",
+		"i want this",
+		"order this",
+		"bring now",
+		"give me this",
+		"give me",
+		"yes please",
+		"alright",
+		"okay",
+	}
+
+	intents["cancel"] = []string{
+		"stop",
 		"cancel",
-		"sitaki",
-}
-
-intents["order_pizza"] = []string{
-		"Nataka pizza",
-		"I need pizza",
-		"I want Pizza",
-}
+	}
 
 ```
 
@@ -97,73 +207,73 @@ Creating stories is simple, make sure that the ``Key name of the intent`` matche
 Example of stories according to our ordering pizza chatbot
 
 ```
-stories["greets"] = map[string]interface{}{
-		"message": "Helo, Karibu nikusaidiaje?",
-		"choices": nil,
-		"next":    nil, //nil means end
-}
-
-stories["goodbye"] = map[string]interface{}{
-		"message": "Karibu tena",
-		"choices": nil,
-		"next":    nil,
-}
-
-stories["cancel"] = map[string]interface{}{
-		"message": "Karibu tena",
-		"choices": nil,
-		"next":    nil,
-}
-
-stories["order_pizza"] = map[string]interface{}{
-		"message": "Unataka pizza gani?",
-		"order_pizza_choices": GoBot.GoBotChoice{
-			Header:               "Unataka pizza gani?",
-			SuccessChoiceMessage: "Karibu tena!",
-			ErrorChoiceMessage:   "Samahani pizza uliochagua haipo!",
-			Choices: []string{
-				"Chicken Pizza",
-				"Cheese Pizza",
-				"Mixture Pizza",
-				"Skyline Pizza",
+stories["greeting"] = map[string]interface{}{
+		"message": []string{
+			"Welcom to Pizza plaza, what can i help you",
+			"Hello, welcome, what can i do for you?",
 		},
-			IntentAction: intents["tuma"].([]string),
+		"type": "echo",
+		"next": nil,
+	}
+
+	//Order pizza choice
+	stories["order"] = map[string]interface{}{
+		"message": `Please choose pizza you want?`,
+		"order_choices": GoBot.GoBotChoice{
+			Header:               "The following is our menu\n1. Cheese Pizza\n2. Chicken Pizza\n3.Sausage Pizza\n\n#Please select our choice",
+			SuccessChoiceMessage: "Thanks for choosing, your order is being processed",
+			ErrorChoiceMessage:   "Sorry the choice you selected, is not present by now!",
+			Choices: []string{
+				"Cheese Pizza",
+				"Chicken Pizza",
+				"Sausage Pizza",
+			},
+			IntentAction: intents["action"].([]string),
 			IntentCancel: intents["cancel"].([]string),
 		},
 		"type": "choices",
-		"next": nil, //nil means end
-}
-	
+		"next": "order_number", //nil means end
+	}
 
-stories["sajili"] = map[string]interface{}{
-		"message": "Tafadhali nipe majibu ya haya maswali?",
-		"type":    "form",
-		"sajili_form": GoBot.GoBotForm{
-			Header: "Karibu jaza maswali yafuatayo kwa usahihi",
-			Form: []GoBot.Form{
-				{
-					Variable: "name",
-					Hint:     "Jina lako nani?",
-				},
-				{
-					Variable: "age",
-					Hint:     "Una umri gani?",
-				},
+	stories["order_number"] = map[string]interface{}{
+		"message": "Unapenda team gani?",
+		"type":    "input",
+		"order_number_input": GoBot.GoBotInput{
+			Header: "How many do you want?",
+			Form: GoBot.Form{
+				Variable: "size",
+				Hint:     "How many pizza do you want?",
 			},
-			IntentAction:   intents["tuma"].([]string),
-			IntentCancel:   intents["cancel"].([]string),
-			ConfirmMessage: "Tafadhali nijibu, nitume au nisitume?",
-			ActionMessage:  "Asante, taarifa zako, zimetumwa",
-			CancelMessage:  "Sijatuma taarifa zako, ukitaka kutuma tena, karibu sana",
+			IntentAction:        intents["action"].([]string),
+			IntentCancel:        intents["cancel"].([]string),
+			SuccessInputMessage: "#Thanks your order is being processed\n#OrderId: 23434",
+			ErrorInputMessage:   "Please tell me, how many pizza do you want?",
 		},
-}
+		"next": nil,
+	}
 
-stories["fallback"] = map[string]interface{}{
-		"message": "Sijaelewa unataka nini?",
-		"type":"default",
-		"choices": nil,
+	//story for menu
+	stories["menu"] = map[string]interface{}{
+		"message": "The following is our menu,\n\n 1. Cheese Pizza\n2. Chicken Pizza\n3.Sausage Pizza\n\n #Welcome",
+		"type":    "echo",
 		"next":    nil,
-}
+	}
+
+	//Defaults one... These are like Addons to GoBot so as it can cancel any action
+	stories["cancel"] = map[string]interface{}{
+		"message": "I gotch you, welcome again",
+		"type":    "echo",
+		"next":    nil,
+	}
+
+	stories["fallback"] = map[string]interface{}{
+		"message": []string{
+			"Hello, I didn't understand you?,",
+			"Sorry, I didn't get what you want!",
+		},
+		"type": "echo",
+		"next": nil,
+	}
 
 ```
 
