@@ -32,12 +32,12 @@ type GoBotForm struct {
 }
 
 type GoBotInput struct {
-	Header               string
-	Form                 Form
-	IntentAction         []string
-	IntentCancel         []string
-	SuccessChoiceMessage string
-	ErrorChoiceMessage   string
+	Header              string
+	Form                Form
+	IntentAction        []string
+	IntentCancel        []string
+	SuccessInputMessage string
+	ErrorInputMessage   string
 }
 
 type GoBotChoice struct {
@@ -294,16 +294,16 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 					} else {
 						return key, errorChoiceMessage
 					}
-				} else if !reflect.DeepEqual(gobot.State.ActiveInput, GoBotChoice{}) {
+				} else if !reflect.DeepEqual(gobot.State.ActiveInput, GoBotInput{}) {
 					hasAction := containsInSlices(gobot.State.ActiveInput.IntentAction, message)
 					hasCancel := containsInSlices(gobot.State.ActiveInput.IntentCancel, message)
 
 					//Do this before clearly gobot lifecycle in memory
 					// successChoiceMessage := gobot.State.ActiveChoice.SuccessChoiceMessage
-					errorInputMessage := gobot.State.ActiveInput.ErrorChoiceMessage
+					errorInputMessage := gobot.State.ActiveInput.ErrorInputMessage
 					input := gobot.State.ActiveInputValue
 
-					gobot.State.ActiveChoice = GoBotChoice{}
+					gobot.State.ActiveInput = GoBotInput{}
 					gobot.State.ActiveChoiceValue = ""
 
 					if hasAction {
@@ -403,18 +403,17 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 			for _, choice := range gobot.State.ActiveChoice.Choices {
 				if strings.ToLower(choice) == strings.ToLower(message) {
 					if nextKey != "" {
-						answerObject[key] = map[string]interface{}{
+						answerObject[prevKey] = map[string]interface{}{
 							"answer": message,
 						}
 					}
 					gobot.State.ActiveChoiceValue = message
-					return "key", gobot.State.ActiveChoice.SuccessChoiceMessage + " " + message
 				}
+
 			}
 
 			//If it meant all requirement.... it goes to next story
 			if nextKey != "" {
-
 				//initialize SaveResults map
 				gobot.State.SavedResults = make(map[string]interface{})
 				//save the result according to story key in Gobot lifecycle object
@@ -425,7 +424,6 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 					gobot.State.ActiveChoice = GoBotChoice{}
 					//Set state for upcoming story
 					gobot.State.SetState(nextKey, nextType)
-
 					activeKey, activeStoryType := gobot.State.GetState()
 					return gobot.CheckingGoBotState(nextKey, activeKey, activeStoryType)
 				}
@@ -434,8 +432,8 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 				gobot.State.SavedResults = make(map[string]interface{})
 				//save the result according to story key in Gobot lifecycle object
 				gobot.State.SavedResults[prevKey] = answerObject
-				fmt.Println("No next story")
 				gobot.State.SetNextStory("", "")
+				return prevKey, gobot.State.ActiveChoice.SuccessChoiceMessage + " " + gobot.State.ActiveChoiceValue
 			}
 
 			return "key", gobot.State.ActiveChoice.ErrorChoiceMessage
@@ -448,19 +446,9 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 			gobot.State.ActiveInputValue = message
 
 			if nextKey != "" {
-				answerObject[key] = map[string]interface{}{
+				answerObject[prevKey] = map[string]interface{}{
 					"answer": message,
 				}
-			} else {
-				answerObject[key] = map[string]interface{}{
-					"answer": message,
-				}
-			}
-
-			//return "key", gobot.State.ActiveChoice.SuccessChoiceMessage + " " + message
-
-			//If it meant all requirement.... it goes to next story
-			if nextKey != "" {
 
 				//initialize SaveResults map
 				gobot.State.SavedResults = make(map[string]interface{})
@@ -478,7 +466,11 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 				}
 
 			} else {
-				fmt.Println("No next story")
+
+				answerObject[prevKey] = map[string]interface{}{
+					"answer": message,
+				}
+
 				gobot.State.SavedResults = make(map[string]interface{})
 				//save the result according to story key in Gobot lifecycle object
 				gobot.State.SavedResults[prevKey] = answerObject
@@ -487,7 +479,10 @@ func (gobot *GoBot) Chat(message string) (string, string) {
 
 			}
 
-			return "key", gobot.State.ActiveChoice.ErrorChoiceMessage
+			return prevKey, gobot.State.ActiveInput.SuccessInputMessage
+
+			//If it meant all requirement.... it goes to next story
+
 		} else {
 			fallbackObject := goBotStories["fallback"].(map[string]interface{})
 

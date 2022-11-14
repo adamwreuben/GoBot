@@ -11,9 +11,8 @@ func main() {
 
 	- choices
 	- form -- multiple
-	- response --- just echos
+	- echo --- just echos
 	- input  --- single capture user input
-
 
 	*/
 
@@ -22,164 +21,118 @@ func main() {
 	// states := make(map[string]interface{})
 
 	//Create intents
-	intents["salam"] = []string{
-		"mambo",
-		"vipi",
-		"upo poa",
-		"fresh",
-		"nambie",
-		"nakuona",
-		"salama",
-		"za asubuhi",
-		"za mchana",
-		"uko poa",
-		"niaje",
+	intents["greeting"] = []string{
 		"hello",
-		"oya",
-		"kama kawa",
+		"hi",
+		"how are you",
+		"morning",
+		"afternoon",
+		"evening",
+	}
+
+	intents["order"] = []string{
+		"order pizza",
+		"i want pizza",
+		"i want piza",
+		"i want piz",
+		"give me piza",
+		"give me pizza",
+		"pizza",
+		"piza",
+		"piz",
+	}
+
+	intents["menu"] = []string{
+		"what pizza do you have",
+		"menu",
+		"menu please",
+	}
+
+	intents["action"] = []string{
+		"yes",
+		"i want this",
+		"order this",
+		"bring now",
+		"give me this",
+		"give me",
+		"yes please",
+		"alright",
+		"okay",
 	}
 
 	intents["cancel"] = []string{
-		"sitisha",
-		"acha",
+		"stop",
 		"cancel",
-		"sitaki",
-		"funga",
-	}
-
-	intents["match"] = []string{
-		"timu yako ni?",
-		"timu",
-		"unapenda team gani?",
-	}
-
-	intents["sajili"] = []string{
-		"nataka kujisajili",
-		"nataka kujiunga",
-		"add me",
-	}
-
-	intents["tuma"] = []string{
-		"tuma",
-		"ndio",
-		"sawa",
-		"forward",
-		"tuma sasa hivi",
-		"send",
 	}
 
 	//creating stories
 
-	stories["salam"] = map[string]interface{}{
-		"message": `Habari karibu sana TBC, sasa unaweza tuma ujumbe wako moja kwa moja kwenye kipindi ukipendacho`,
-		"salam_choices": GoBot.GoBotChoice{
-			Header:               "Chagua kipindi?",
-			SuccessChoiceMessage: "Umechagua ",
-			ErrorChoiceMessage:   "Samahani hauna hicho kipindi!",
+	stories["greeting"] = map[string]interface{}{
+		"message": []string{
+			"Welcom to Pizza plaza, what can i help you",
+			"Hello, welcome, what can i do for you?",
+		},
+		"type": "echo",
+		"next": nil,
+	}
+
+	//Order pizza choice
+	stories["order"] = map[string]interface{}{
+		"message": `Please choose pizza you want?`,
+		"order_choices": GoBot.GoBotChoice{
+			Header:               "The following is our menu\n1. Cheese Pizza\n2. Chicken Pizza\n3.Sausage Pizza\n\n#Please select our choice",
+			SuccessChoiceMessage: "Thanks for choosing, your order is being processed",
+			ErrorChoiceMessage:   "Sorry the choice you selected, is not present by now!",
 			Choices: []string{
-				"Busati",
-				"Sasambu",
-				"Sekeseke",
-				"Millazo EP",
-				"Simela",
-				"Kinaganaga",
-				"Papaso",
-				"Ligi Kuu Tanzania",
+				"Cheese Pizza",
+				"Chicken Pizza",
+				"Sausage Pizza",
 			},
-			IntentAction: intents["tuma"].([]string),
+			IntentAction: intents["action"].([]string),
 			IntentCancel: intents["cancel"].([]string),
 		},
 		"type": "choices",
-		"next": "tayari", //nil means end
+		"next": "order_number", //nil means end
 	}
 
-	stories["sajili"] = map[string]interface{}{
-		"message": "Tafadhali nipe majibu ya haya maswali?",
-		"type":    "form",
-		"sajili_form": GoBot.GoBotForm{
-			Header: "Karibu jaza maswali yafuatayo kwa usahihi",
-			Form: []GoBot.Form{
-				{
-					Variable: "name",
-					Hint:     "Jina lako nani?",
-				},
-				{
-					Variable: "age",
-					Hint:     "Una umri gani?",
-				},
+	stories["order_number"] = map[string]interface{}{
+		"message": "Unapenda team gani?",
+		"type":    "input",
+		"order_number_input": GoBot.GoBotInput{
+			Header: "How many do you want?",
+			Form: GoBot.Form{
+				Variable: "size",
+				Hint:     "How many pizza do you want?",
 			},
-			IntentAction:   intents["tuma"].([]string),
-			IntentCancel:   intents["cancel"].([]string),
-			ConfirmMessage: "Tafadhali nijibu, nitume au nisitume?",
-			ActionMessage:  "Asante, taarifa zako, zimetumwa",
-			CancelMessage:  "Sijatuma taarifa zako, ukitaka kutuma tena, karibu sana!",
-		},
-		"next": "address",
-	}
-
-	stories["address"] = map[string]interface{}{
-		"message": "Ningependa kujua umezaliwa wapi?",
-		"type":    "form",
-		"address_form": GoBot.GoBotForm{
-			Header: "Ningependa kujua umezaliwa wapi?",
-			Form: []GoBot.Form{
-				{
-					Variable: "mkoa",
-					Hint:     "Unaishi wapi?",
-				},
-				{
-					Variable: "wazazi",
-					Hint:     "Wazazi wako wapi sasa?",
-				},
-			},
-			IntentAction:   intents["tuma"].([]string),
-			IntentCancel:   intents["cancel"].([]string),
-			ConfirmMessage: "Tafadhali nijibu, nitume au nisitume?",
-			ActionMessage:  "Asante, taarifa zako, zimetumwa",
-			CancelMessage:  "Sijatuma taarifa zako, ukitaka kutuma tena, karibu sana!",
+			IntentAction:        intents["action"].([]string),
+			IntentCancel:        intents["cancel"].([]string),
+			SuccessInputMessage: "#Thanks your order is being processed\n#OrderId: 23434",
+			ErrorInputMessage:   "Please tell me, how many pizza do you want?",
 		},
 		"next": nil,
 	}
 
-	stories["tayari"] = map[string]interface{}{
-		"message": "Asante kwa kuchagua",
-		"type":    "respond",
-		"choices": nil,
+	//story for menu
+	stories["menu"] = map[string]interface{}{
+		"message": "The following is our menu,\n\n 1. Cheese Pizza\n2. Chicken Pizza\n3.Sausage Pizza\n\n #Welcome",
+		"type":    "echo",
 		"next":    nil,
 	}
 
-	stories["match"] = map[string]interface{}{
-		"message": "Unapenda team gani?",
-		"type":    "input",
-		"match_input": GoBot.GoBotInput{
-			Header: "Unapenda team gani?",
-			Form: GoBot.Form{
-				Variable: "team",
-				Hint:     "Unapenda team gani?",
-			},
-			IntentAction:         intents["tuma"].([]string),
-			IntentCancel:         intents["cancel"].([]string),
-			SuccessChoiceMessage: "",
-			ErrorChoiceMessage:   "Tafadhali nipe jibu",
-		},
-		"next": nil,
-	}
-
+	//Defaults one... These are like Addons to GoBot so as it can cancel any action
 	stories["cancel"] = map[string]interface{}{
-		"message": "Usijali, Karibu tena",
-		"type":    "response",
-		"choices": nil,
+		"message": "I gotch you, welcome again",
+		"type":    "echo",
 		"next":    nil,
 	}
 
 	stories["fallback"] = map[string]interface{}{
 		"message": []string{
-			"Sijaelewa unataka nini?",
-			"Samahani sijakuelewa!, Jaribu kuandika saada?",
+			"Hello, I didn't understand you?,",
+			"Sorry, I didn't get what you want!",
 		},
-		"type":    "default",
-		"choices": nil,
-		"next":    nil,
+		"type": "echo",
+		"next": nil,
 	}
 
 	//Create GoBot instance
