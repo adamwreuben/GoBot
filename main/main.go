@@ -135,7 +135,7 @@ func main() {
 		"next": nil,
 	}
 
-	//Create GoBot instance
+	//Create GoBot runnning instance
 	goBot := GoBot.NewGoBot(intents, stories)
 	// fmt.Println(goBot)
 	goBot.Playground()
