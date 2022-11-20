@@ -16,7 +16,9 @@ type GoBotLifecycle struct {
 }
 
 func NewLifecycle() *GoBotLifecycle {
-	return &GoBotLifecycle{}
+	return &GoBotLifecycle{
+		SavedResults: make(map[string]interface{}),
+	}
 }
 
 func (goBotLifecycle *GoBotLifecycle) SetState(state string, storyType string) {
