@@ -2,7 +2,7 @@ GoBot
 =======
 ![GoPesa](https://storage.googleapis.com/gopherizeme.appspot.com/gophers/11fa3afd6080dae6903dc359e42990d68657e17a.png)
 
-``GoBot`` is a Go library for building chat bots super fast and easily. 
+``GoBot`` is a Go library for building chat bots super fast and easily similar to Sarufu.io but without AI. 
 [![Made in Tanzania](https://img.shields.io/badge/made%20in-tanzania-008751.svg?style=flat-square)](https://github.com/Tanzania-Developers-Community/made-in-tanzania)
 
 
